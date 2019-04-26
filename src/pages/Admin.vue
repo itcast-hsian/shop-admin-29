@@ -7,11 +7,11 @@
             </el-aside>
 
             <el-container>
-                
                 <el-header>
                     <!-- 头部组件 -->
                     <Header @updataCollapse="updataCollapse"/>
                 </el-header>
+
                 <el-main>
                   <!-- 面包屑组件 --> 
                   <el-breadcrumb separator="/">
