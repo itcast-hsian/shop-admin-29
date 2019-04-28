@@ -3,13 +3,13 @@
         <!-- 列表顶部 -->
         <el-row type="flex" justify="space-between" align="middle" class="tooltip">
             <el-col>
-                <el-button>新增</el-button>
+                <el-button @click="$router.push(`/admin/goods-add`)">新增</el-button>
                 <el-button @click="handleMoreDelete">删除</el-button>
             </el-col>
             
             <div>
-                <el-input placeholder="请输入内容" class="input-with-select">
-                    <el-button slot="append" icon="el-icon-search"></el-button>
+                <el-input placeholder="请输入内容" class="input-with-select" v-model="searchValue">
+                    <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
                 </el-input>
             </div>
         </el-row>
@@ -56,8 +56,9 @@
                 <template slot-scope="scope">
                     <el-button
                     size="mini"
-                    @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-
+                    @click="handleEdit(scope.row)">编辑</el-button>
+                    
+                    <!-- scope.row是单前行的数据 -->
                     <el-button
                     size="mini"
                     type="danger"
@@ -65,6 +66,23 @@
                 </template>
             </el-table-column>
         </el-table>
+
+        <!-- size-change: 修改条数触发 -->
+        <!-- current-change: 切换到当前页的事件  -->
+        <!-- current-page：默认当前的页数 -->
+        <!-- page-sizes条数选择的下拉数据 -->
+        <!-- page-size：默认条数 -->
+        <!-- layout是布局 -->
+        <!-- total 表示总条数 -->
+         <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageIndex"
+            :page-sizes="[2, 4, 8, 16]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="totalCount">
+        </el-pagination>
 
     </div>
 </template>
@@ -74,11 +92,37 @@ export default {
     data() {
       return {
         tableData: [],
-        ids: []
+        ids: [],
+
+        // 默认条数
+        pageSize: 4,
+        // 当前的页面
+        pageIndex: 1,
+        // 总条数
+        totalCount: 0,
+        // 输入框的值
+        searchValue: ""
       }
     },
 
     methods: {
+        // 修改条数的事件，val是条数
+        handleSizeChange(val) {
+            this.pageSize = val;
+            this.getList();
+        },
+
+        // 当前页的事件，val当前是多少页
+        handleCurrentChange(val) {
+            this.pageIndex = val;
+            this.getList();
+        },
+
+        // 点击搜索按钮时候触发
+        handleSearch(){
+           this.getList();
+        },
+
         // 多选选择时候触发
         handleSelectionChange(val) {
             var ids = val.map(v => {
@@ -92,15 +136,18 @@ export default {
         getList(){
             // 请求商品列表数据
             this.$axios({
-                url: "/admin/goods/getlist?pageIndex=1&pageSize=4&searchvalue="
+                url: `/admin/goods/getlist?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}&searchvalue=${this.searchValue}`
             }).then(res => {
-                const {message} = res.data;
+                const {message, totalcount} = res.data;
                 this.tableData = message;
-            })
+                // 赋值给总条数
+                this.totalCount = totalcount;
+            });
         },
 
-        handleEdit(index, row) {
-            console.log(index, row);
+        // row当前行的数据，是一个对象
+        handleEdit(row) {
+            this.$router.push(`/admin/goods-edit/${row.id}`);
         },
         
         // 删除单行数据

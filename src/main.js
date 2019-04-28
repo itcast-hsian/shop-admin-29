@@ -12,6 +12,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import Login from "./pages/Login.vue"
 import Admin from "./pages/Admin.vue"
 import GoodsList from "./pages/GoodsList.vue"
+import GoodsAdd from "./pages/GoodsAdd.vue"
+import GoodsEdit from "./pages/GoodsEdit.vue"
 
 // 2.element - 注册
 Vue.use(ElementUI)
@@ -25,7 +27,9 @@ const routes = [
   {path: "/login", component: Login, meta: "登录"}, 
   // 首页
   {path: "/admin", component: Admin, meta: "管理后台", children: [
-    {path: "goods-list", component: GoodsList, meta: "商品列表",}
+    {path: "goods-list", component: GoodsList, meta: "商品列表"},
+    {path: "goods-add", component: GoodsAdd, meta: "新增商品"},
+    {path: "goods-edit/:id", component: GoodsEdit, meta: "编辑商品"}
   ]} 
 ]
 
